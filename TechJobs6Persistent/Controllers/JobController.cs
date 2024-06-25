@@ -35,52 +35,40 @@ namespace TechJobs6Persistent.Controllers
             AddJobViewModel addJobViewModel = new AddJobViewModel
             {
                 Employers = context
-                    .Employers.Select(e => new SelectListItem
-                    {
-                        Value = e.Id.ToString(),
-                        Text = e.Name
-                    })
+                    .Employers?.Select(e => new SelectListItem(e.Name, e.Id.ToString()))
                     .ToList()
             };
+
             return View(addJobViewModel);
         }
 
         [HttpPost]
         public IActionResult Add(AddJobViewModel addJobViewModel)
         {
-             if (ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                
                 Job job = new Job
                 {
                     Name = addJobViewModel.Name,
                     EmployerId = addJobViewModel.EmployerId
                 };
 
-                
                 context.Jobs.Add(job);
                 context.SaveChanges();
 
-          
                 return Redirect("/Job");
             }
 
-            
-            addJobViewModel.Employers = context.Employers
-                .Select(e => new SelectListItem
-                {
-                    Value = e.Id.ToString(),
-                    Text = e.Name
-                })
-                .ToList();
+            addJobViewModel.Employers = context
+                    .Employers?.Select(e => new SelectListItem(e.Name, e.Id.ToString()))
+                    .ToList();
 
             return View(addJobViewModel);
         }
-        
 
         public IActionResult Delete()
         {
-            ViewBag.jobs = context.Jobs.ToList();
+            ViewBag.jobs = context.Jobs?.ToList();
 
             return View();
         }

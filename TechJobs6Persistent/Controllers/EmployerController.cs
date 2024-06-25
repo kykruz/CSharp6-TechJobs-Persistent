@@ -47,7 +47,7 @@ namespace TechJobs6Persistent
                     Location = addEmployerViewModel.Location
                 };
 
-                context.Employers.Add(employer);
+                context.Employers?.Add(employer);
                 context.SaveChanges();
 
                 return Redirect("Index");
