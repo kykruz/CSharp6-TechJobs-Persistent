@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using TechJobs6Persistent.Data;
 using TechJobs6Persistent.Models;
@@ -31,14 +32,51 @@ namespace TechJobs6Persistent.Controllers
 
         public IActionResult Add()
         {
-            return View();
+            AddJobViewModel addJobViewModel = new AddJobViewModel
+            {
+                Employers = context
+                    .Employers.Select(e => new SelectListItem
+                    {
+                        Value = e.Id.ToString(),
+                        Text = e.Name
+                    })
+                    .ToList()
+            };
+            return View(addJobViewModel);
         }
 
         [HttpPost]
-        public IActionResult ProcessAddJobForm()
+        public IActionResult Add(AddJobViewModel addJobViewModel)
         {
-            return View();
+             if (ModelState.IsValid)
+            {
+                
+                Job job = new Job
+                {
+                    Name = addJobViewModel.Name,
+                    EmployerId = addJobViewModel.EmployerId
+                };
+
+                
+                context.Jobs.Add(job);
+                context.SaveChanges();
+
+          
+                return Redirect("/Job");
+            }
+
+            
+            addJobViewModel.Employers = context.Employers
+                .Select(e => new SelectListItem
+                {
+                    Value = e.Id.ToString(),
+                    Text = e.Name
+                })
+                .ToList();
+
+            return View(addJobViewModel);
         }
+        
 
         public IActionResult Delete()
         {
@@ -63,13 +101,14 @@ namespace TechJobs6Persistent.Controllers
 
         public IActionResult Detail(int id)
         {
-            Job theJob = context.Jobs.Include(j => j.Employer).Include(j => j.Skills).Single(j => j.Id == id);
+            Job theJob = context
+                .Jobs.Include(j => j.Employer)
+                .Include(j => j.Skills)
+                .Single(j => j.Id == id);
 
             JobDetailViewModel jobDetailViewModel = new JobDetailViewModel(theJob);
 
             return View(jobDetailViewModel);
-
         }
     }
 }
-

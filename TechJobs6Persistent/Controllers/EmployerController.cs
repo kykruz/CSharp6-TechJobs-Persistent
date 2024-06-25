@@ -10,34 +10,57 @@ using TechJobs6Persistent.ViewModels;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
-namespace TechJobs6Persistent.Controllers
+namespace TechJobs6Persistent
 {
     public class EmployerController : Controller
-    { 
+    {
+        private JobDbContext context;
+
+        public EmployerController(JobDbContext dbContext)
+        {
+            context = dbContext;
+        }
+
         // GET: /<controller>/
         [HttpGet]
         public IActionResult Index()
         {
-            return View();
+            List<Employer> employers = context.Employers.ToList();
+            return View(employers);
         }
 
         [HttpGet]
         public IActionResult Create()
         {
-            return View();
+            AddEmployerViewModel addEmployerViewModel = new AddEmployerViewModel();
+            return View(addEmployerViewModel);
         }
 
         [HttpPost]
-        public IActionResult ProcessCreateEmployerForm()
+        public IActionResult ProcessCreateEmployerForm(AddEmployerViewModel addEmployerViewModel)
         {
-            return View();
+            if (ModelState.IsValid)
+            {
+                Employer employer = new Employer
+                {
+                    Name = addEmployerViewModel.Name,
+                    Location = addEmployerViewModel.Location
+                };
+
+                context.Employers.Add(employer);
+                context.SaveChanges();
+
+                return Redirect("Index");
+            }
+
+            return View("Create", addEmployerViewModel);
         }
 
         public IActionResult About(int id)
         {
-            return View();
-        }
+            Employer employer = context.Employers.Find(id);
 
+            return View(employer);
+        }
     }
 }
-
