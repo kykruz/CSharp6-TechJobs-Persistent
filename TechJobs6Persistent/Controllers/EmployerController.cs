@@ -32,7 +32,7 @@ namespace TechJobs6Persistent
         [HttpGet]
         public IActionResult Create()
         {
-            AddEmployerViewModel addEmployerViewModel = new AddEmployerViewModel();
+            AddEmployerViewModel addEmployerViewModel = new();
             return View(addEmployerViewModel);
         }
 
@@ -41,7 +41,7 @@ namespace TechJobs6Persistent
         {
             if (ModelState.IsValid)
             {
-                Employer employer = new Employer
+                Employer employer = new()
                 {
                     Name = addEmployerViewModel.Name,
                     Location = addEmployerViewModel.Location

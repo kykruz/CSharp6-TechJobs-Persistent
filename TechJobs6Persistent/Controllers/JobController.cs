@@ -25,14 +25,14 @@ namespace TechJobs6Persistent.Controllers
         // GET: /<controller>/
         public IActionResult Index()
         {
-            List<Job> jobs = context.Jobs.Include(j => j.Employer).ToList();
+            List<Job> jobs = context.Jobs.Include(j => j.Employer).OrderBy(j => j.Name).ToList();
 
             return View(jobs);
         }
 
         public IActionResult Add()
         {
-            AddJobViewModel addJobViewModel = new AddJobViewModel
+            AddJobViewModel addJobViewModel = new()
             {
                 Employers = context
                     .Employers?.Select(e => new SelectListItem(e.Name, e.Id.ToString()))
@@ -47,7 +47,7 @@ namespace TechJobs6Persistent.Controllers
         {
             if (ModelState.IsValid)
             {
-                Job job = new Job
+                Job job = new ()
                 {
                     Name = addJobViewModel.Name,
                     EmployerId = addJobViewModel.EmployerId
